@@ -3,7 +3,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 module Funk.LastFM
-  ( scrobble
+  ( getSession
+  , scrobble
   ) where
 
 import Data.Aeson (FromJSON, decode)
@@ -44,6 +45,18 @@ scrobble sk (PlayedTrack ts track) = do
       requestParams $
       (trackParams track) ++
       [("timestamp", (U.fromString $ show ts)), ("sk", sk), ("method", "track.scrobble")]
+
+getSession :: String -> String -> IO (Maybe String)
+getSession username password = do
+  response <- httpLBS . setSecurePost . setRequestBodyURLEncoded (requestParams params) $ apiRequest
+  let body = getResponseBody response
+  return $ fmap (key . session) $ decode body
+  where
+    params =
+      [ ("method", "auth.getMobileSession")
+      , ("username", U.fromString username)
+      , ("password", U.fromString password)
+      ]
 
 requestParams args = all ++ [("api_sig", sig), ("format", "json")]
   where

@@ -1,7 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE LambdaCase #-}
 
 module Funk.CLI
   ( getPending
+  , handleInit
   , handlePlaying
   ) where
 
@@ -27,6 +29,11 @@ confFile s = do
 
 getTimestamp :: IO Integer
 getTimestamp = round <$> getPOSIXTime
+
+saveSessionKey :: String -> IO ()
+saveSessionKey key = do
+  file <- confFile "auth"
+  writeFile file key
 
 getSessionKey :: IO (Maybe B.ByteString)
 getSessionKey = do
@@ -58,6 +65,16 @@ scrobblePending sk pt = do
     shouldScrobble (Just (T.PlayedTrack ts1 t1)) (T.PlayedTrack ts2 t2) =
       ts2 - ts1 >= (T.duration t1) - 10
     shouldScrobble _ _ = False
+
+handleInit = do
+  confDir >>= D.createDirectoryIfMissing True
+  putStr "Username: "
+  username <- getLine
+  putStr "Password: "
+  password <- getLine
+  getSession username password >>= \case
+    Just s -> saveSessionKey s
+    _ -> putStrLn "Fail!"
 
 handlePlaying :: [String] -> IO ()
 handlePlaying args = do
