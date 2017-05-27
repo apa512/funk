@@ -22,12 +22,9 @@ executable funk
                      , aeson
                      , directory
                      , hashmap
-                     , http-types
                      , http-conduit
                      , pureMD5
-                     , text
                      , time
                      , template-haskell
                      , utf8-string
-                     , unix
   default-language:    Haskell2010

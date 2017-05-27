@@ -16,7 +16,6 @@ import Funk.Track (PlayedTrack(..), Track(..))
 import GHC.Generics (Generic)
 import Hackery
 import Network.HTTP.Simple
-import Network.HTTP.Types.URI (renderSimpleQuery)
 
 data Session = Session
   { subscriber :: Integer
