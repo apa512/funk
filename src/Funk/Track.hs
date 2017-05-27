@@ -8,12 +8,13 @@ module Funk.Track
 
 import Data.Aeson
 import qualified Data.HashMap as M
-import Text.Read (readMaybe)
 import GHC.Generics (Generic)
+import Text.Read (readMaybe)
 
 data Track = Track
   { artist :: String
   , title :: String
+  , album :: Maybe String
   , duration :: Integer
   , trackNumber :: Maybe Integer
   , mbid :: Maybe String
@@ -37,7 +38,7 @@ instance ToJSON PlayedTrack
 
 fromList :: [(String, String)] -> Maybe Track
 fromList args =
-  Track <$> get "artist" <*> get "title" <*> (get "duration" >>= readMaybe) <*>
+  Track <$> get "artist" <*> get "title" <*> pure (get "album") <*> (get "duration" >>= readMaybe) <*>
   pure (get "tracknumber" >>= readMaybe) <*>
   pure (get "musicbrainz_trackid")
   where

@@ -39,6 +39,7 @@ apiSecret = $(compiledEnv "API_SECRET")
 scrobble sk (PlayedTrack ts track) = do
   response <- httpLBS . setRequestBodyURLEncoded params . setSecurePost $ apiRequest
   let body = getResponseBody response
+  B.appendFile "/home/erik/funk.log" $ B.concat (map (uncurry B.append) params)
   print body
   return ()
   where
@@ -64,7 +65,13 @@ trackParams track =
   [ ("artist", U.fromString $ artist track)
   , ("track", U.fromString $ title track)
   , ("duration", U.fromString $ show $ duration track)
-  ]
+  ] ++
+  optional
+  where
+    optional =
+      [ (k, U.fromString v)
+      | (k, Just v) <- [("album", album track), ("mbid", mbid track), ("trackNumber", fmap show $ trackNumber track)]
+      ]
 
 apiRequest = setURL defaultRequest
 
