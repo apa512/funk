@@ -58,6 +58,7 @@ setPending pt = do
     file <- confFile "pending"
     L.writeFile file (encode pt)
 
+scrobblePending :: B.ByteString -> T.PlayedTrack -> IO ()
 scrobblePending sk pt = do
   pending <- getPending
   when (shouldScrobble pending pt) (scrobble sk (fromJust pending))

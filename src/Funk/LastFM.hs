@@ -58,6 +58,7 @@ getSession username password = do
       , ("password", U.fromString password)
       ]
 
+requestParams :: [(B.ByteString, B.ByteString)] -> [(B.ByteString, B.ByteString)]
 requestParams args = all ++ [("api_sig", sig), ("format", "json")]
   where
     sig = apiSig $ all
